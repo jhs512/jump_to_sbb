@@ -6,12 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface RepositoryUtil {
     @Transactional
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "SET FOREIGN_KEY_CHECKS = 0", nativeQuery = true)
     void disableForeignKeyChecks();
 
     @Transactional
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "SET FOREIGN_KEY_CHECKS = 1", nativeQuery = true)
     void enableForeignKeyChecks();
 

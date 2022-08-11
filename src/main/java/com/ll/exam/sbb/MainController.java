@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,6 +22,8 @@ import java.util.stream.IntStream;
 @Controller
 public class MainController {
     private int increaseNo = -1;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @RequestMapping("/sbb")
     // 아래 함수의 리턴값을 그대로 브라우저에 표시
@@ -208,6 +212,17 @@ public class MainController {
     @ResponseBody
     Person addPerson(Person p) {
         return p;
+    }
+
+    @GetMapping("/answerList")
+    @ResponseBody
+    public List<Answer> showTest() {
+        Question q = questionRepository.findById(2).get();
+
+        return q.getAnswerList()
+                .stream()
+                .sorted(Comparator.comparingInt(Answer::getId).reversed())
+                .collect(Collectors.toList());
     }
 }
 

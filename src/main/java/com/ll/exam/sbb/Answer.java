@@ -1,5 +1,6 @@
 package com.ll.exam.sbb;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +21,6 @@ public class Answer {
     private LocalDateTime createDate;
 
     @ManyToOne
+    @JsonIgnore
     private Question question;
 }

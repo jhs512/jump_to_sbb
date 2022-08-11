@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -24,21 +26,32 @@ public class AnswerRepositoryTests {
     private void clearData() {
         QuestionRepositoryTests.clearData(questionRepository);
 
+        answerRepository.deleteAll();
         answerRepository.truncateTable();
     }
 
     private void createSampleData() {
         QuestionRepositoryTests.createSampleData(questionRepository);
+
+        Question q = questionRepository.findById(2).get();
+
+        Answer a = new Answer();
+        a.setContent("1번 답변");
+        a.setCreateDate(LocalDateTime.now());
+        q.addAnswer(a);
     }
 
     @Test
+    @Rollback(false)
+    @Transactional
     void 저장() {
         Question q = questionRepository.findById(2).get();
 
         Answer a = new Answer();
-        a.setContent("네 자동으로 생성됩니다.");
-        a.setQuestion(q);
+        a.setContent("2번 답변");
         a.setCreateDate(LocalDateTime.now());
-        answerRepository.save(a);
+        q.addAnswer(a);
+
+        System.out.println(q.getAnswerList());
     }
 }

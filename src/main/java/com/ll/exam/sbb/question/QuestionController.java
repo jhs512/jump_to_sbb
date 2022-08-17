@@ -3,7 +3,10 @@ package com.ll.exam.sbb.question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -48,8 +51,18 @@ public class QuestionController {
     }
 
     @PostMapping("/create")
-    public String questionCreate(String subject, String content) {
-        questionService.create(subject, content);
+    public String questionCreate(Model model, QuestionFrom questionFrom) {
+        if (questionFrom.getSubject() == null || questionFrom.getSubject().trim().length() == 0) {
+            model.addAttribute("errorMsg", "제목 좀...");
+            return "question_form";
+        }
+
+        if (questionFrom.getContent() == null || questionFrom.getContent().trim().length() == 0) {
+            model.addAttribute("errorMsg", "내용 좀...");
+            return "question_form";
+        }
+
+        questionService.create(questionFrom.getSubject(), questionFrom.getContent());
         return "redirect:/question/list"; // 질문 저장후 질문목록으로 이동
     }
 }

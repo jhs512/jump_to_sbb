@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.List;
 
 @RequestMapping("/question")
 @Controller
@@ -59,11 +58,11 @@ public class QuestionController {
     public String questionModify(QuestionForm questionForm, @PathVariable("id") Integer id, Principal principal) {
         Question question = this.questionService.getQuestion(id);
 
-        if ( question == null ) {
+        if (question == null) {
             throw new DataNotFoundException("%d번 질문은 존재하지 않습니다.");
         }
 
-        if(!question.getAuthor().getUsername().equals(principal.getName())) {
+        if (!question.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
 
@@ -71,6 +70,20 @@ public class QuestionController {
         questionForm.setContent(question.getContent());
 
         return "question_form";
+    }
+
+    @PostMapping("/modify/{id}")
+    public String questionModify(@Valid QuestionForm questionForm, BindingResult bindingResult,
+                                 Principal principal, @PathVariable("id") Integer id) {
+        if (bindingResult.hasErrors()) {
+            return "question_form";
+        }
+        Question question = this.questionService.getQuestion(id);
+        if (!question.getAuthor().getUsername().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
+        }
+        this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
+        return String.format("redirect:/question/detail/%s", id);
     }
 
     @PreAuthorize("isAuthenticated()")

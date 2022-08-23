@@ -1,7 +1,5 @@
 package com.ll.exam.sbb.question;
 
-import com.ll.exam.sbb.DataNotFoundException;
-import com.ll.exam.sbb.answer.Answer;
 import com.ll.exam.sbb.answer.AnswerForm;
 import com.ll.exam.sbb.user.SiteUser;
 import com.ll.exam.sbb.user.UserService;
@@ -116,5 +114,15 @@ public class QuestionController {
         questionService.delete(question);
 
         return "redirect:/";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    public String questionVote(Principal principal, @PathVariable("id") Long id) {
+        Question question = questionService.getQuestion(id);
+        SiteUser siteUser = userService.getUser(principal.getName());
+
+        questionService.vote(question, siteUser);
+        return "redirect:/question/detail/%d".formatted(id);
     }
 }

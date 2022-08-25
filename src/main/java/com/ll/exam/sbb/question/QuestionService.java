@@ -35,6 +35,19 @@ public class QuestionService {
         return questionRepository.findDistinctBySubjectContainsOrContentContainsOrAuthor_usernameContainsOrAnswerList_contentContainsOrAnswerList_author_username(kw, kw, kw, kw, kw, pageable);
     }
 
+    public Page<Question> getDslList(String kw, int page, String sortCode) {
+        List<Sort.Order> sorts = new ArrayList<>();
+
+        switch (sortCode) {
+            case "OLD" -> sorts.add(Sort.Order.asc("id")); // 오래된순
+            default -> sorts.add(Sort.Order.desc("id")); // 최신순
+        }
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+        return questionRepository.getDslList(kw, pageable);
+    }
+
     public Question getQuestion(long id) {
         return questionRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("no %d question not found,".formatted(id)));
